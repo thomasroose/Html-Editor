@@ -10,7 +10,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 /**
- * Simple GUI for a text editor.
+ * Html editor
  *
  */
 public class Texed extends JFrame implements DocumentListener,KeyListener {
@@ -21,6 +21,7 @@ public class Texed extends JFrame implements DocumentListener,KeyListener {
 	StringBuffer bufferRedo = new StringBuffer();
 
 	private static final long serialVersionUID = 5514566716849599754L;
+	
 	/**
 	 * Constructs a new GUI: A TextArea on a ScrollPane
 	 */
@@ -50,9 +51,16 @@ public class Texed extends JFrame implements DocumentListener,KeyListener {
 	@Override
 	public void keyPressed(KeyEvent e) {
 		
+		/**
+		 * Link the autoComplete() method to F1
+		 */
 		if(e.getKeyCode() == KeyEvent.VK_F1){
 			autoComplete();
 		}
+		
+		/**
+		 * Link the undo() method to F2
+		 */
 		if(e.getKeyCode() == KeyEvent.VK_F2){
 			try{
 				undo();
@@ -60,6 +68,10 @@ public class Texed extends JFrame implements DocumentListener,KeyListener {
 				JOptionPane.showMessageDialog(frame, "Please enter some text before undoing your actions");
 			}
 		}
+		
+		/**
+		 * Link the redo() method to F3
+		 */
 		if(e.getKeyCode() == KeyEvent.VK_F3){
 			try{
 				redo();
@@ -67,6 +79,10 @@ public class Texed extends JFrame implements DocumentListener,KeyListener {
 			    JOptionPane.showMessageDialog(frame, "There are no actions to redo");
 			}
 		}
+		
+		/**
+		 * Register every letter and number and backspace
+		 */
 		if(e.getKeyCode() == KeyEvent.VK_BACK_SPACE){
 			bufferCurrent.setLength(bufferCurrent.length()-1);
 		}else{
@@ -75,7 +91,6 @@ public class Texed extends JFrame implements DocumentListener,KeyListener {
 				bufferCurrent.append(ch);
 			}
 		}
-		//System.out.println(bufferCurrent);
 	}
 	
 	/**
@@ -88,9 +103,6 @@ public class Texed extends JFrame implements DocumentListener,KeyListener {
 		
 		textArea.setText("");
 		textArea.setText(bufferCurrent.toString());
-		
-		//System.out.println("C = " + bufferCurrent);
-		//System.out.println("R =" + bufferRedo + "\n");
 	}
 	
 	/**
@@ -104,9 +116,6 @@ public class Texed extends JFrame implements DocumentListener,KeyListener {
 			
 			textArea.setText("");
 			textArea.setText(bufferCurrent.toString());
-			
-			//System.out.println("C = " + bufferCurrent);
-			//System.out.print("R = " + bufferRedo + "\n");
 		}
 	}
 
@@ -127,7 +136,6 @@ public class Texed extends JFrame implements DocumentListener,KeyListener {
 		String text = textArea.getText();
 		fixTags(text);
 		bufferCurrent.replace(0, bufferCurrent.length(), fixTags(text));
-		//System.out.println("B = " + bufferCurrent + " : T = " + fixTags(text));
 	}
 	
 	/**
@@ -190,7 +198,7 @@ public class Texed extends JFrame implements DocumentListener,KeyListener {
 		
 		int currentTagLenght,nextTagLength = 0,posNextClosedTag,posNextOpenTag;
 		Boolean endLoop = false, HtmlOkForTag = false;
-		String[] htmlElements = {"html","body","header","footer","h1","h2","h3","h4","h5","h6","p","b","i","div","nav","img"};
+		String[] htmlElements = {"html","body","header","footer","h1","h2","h3","h4","h5","h6","p","b","i","div","nav"};
 		
 		/**
 		 * Check if there are any tags in the text
@@ -208,7 +216,6 @@ public class Texed extends JFrame implements DocumentListener,KeyListener {
 			/**
 			 * Get the next tag for checking
 			 */
-			
 			addedText = "";
 			currentTagLenght  = stringNotChecked.indexOf(closingTagSign)+1;
 			currentTag = stringNotChecked.substring(0, currentTagLenght);
@@ -220,6 +227,7 @@ public class Texed extends JFrame implements DocumentListener,KeyListener {
 			 */
 			posNextOpenTag = leftTrim.indexOf(currentTag);
 			posNextClosedTag =leftTrim.indexOf("</" + contentCurrentTag + ">");
+			
 			if ((posNextOpenTag > posNextClosedTag && posNextClosedTag >= 0)||(posNextClosedTag >= 0 && posNextOpenTag < 0) || (currentTag.indexOf("</") >= 0))  {
 				HtmlOkForTag = true;
 			}else{
@@ -245,7 +253,7 @@ public class Texed extends JFrame implements DocumentListener,KeyListener {
 			if(!HtmlOkForTag && IsHtmlTag(contentCurrentTag,htmlElements)){ 
 				
 				/**
-				 * Case if there is text after current tag
+				 * Case if there is text after the current tag
 				 */
 				if(leftTrim.length() > 0 && leftTrim.indexOf("<") >= 0){
 					
@@ -294,10 +302,9 @@ public class Texed extends JFrame implements DocumentListener,KeyListener {
 				stringNotChecked = stringChecked + addedText;	
 				fullText = stringChecked + addedText;
 				stringChecked = "";
-				
-				
+					
 			/**
-			 * Current tag is ok and prepare String not checked for next check of tags
+			 * Current tag is ok and prepare string "notChecked" for next check of tags
 			 */
 			}else{
 				
@@ -322,11 +329,18 @@ public class Texed extends JFrame implements DocumentListener,KeyListener {
 								stringChecked = stringChecked + currentTag + leftTrim.substring(0,posNextOpenTag);
 							break;
 						}
+					}
 					
-					}// check if end of file of no more tags
+					/**
+					 * 	Check if end of file or no more tags	
+					 */
 					if(stringNotChecked.length() <= 0 || stringNotChecked.indexOf("<") < 0){ 
 						endLoop = true;
-					}else { // handels case if a<h2> at the end
+						
+					/**
+					 * Handels case if "a<h2> at the end
+					 */
+					}else { 
 					 	if (!stringNotChecked.substring(0,1).equals("<")) {
 					 		posNextOpenTag = stringNotChecked.indexOf("<");
 					 		stringChecked = stringChecked + stringNotChecked.substring(0,posNextOpenTag);
@@ -341,6 +355,13 @@ public class Texed extends JFrame implements DocumentListener,KeyListener {
 		return fullText;
 	}
 	
+	/**
+	 * Method that checks for an Html tag
+	 * 
+	 * @param content		The content where the tags ar in
+	 * @param HtmlTagArray	An array of some of the Html elements
+	 * @return
+	 */
 	public boolean IsHtmlTag (String content, String[] HtmlTagArray) {
 		int lengthArray = HtmlTagArray.length,i;
 		boolean foundElement = false;
@@ -382,7 +403,4 @@ public class Texed extends JFrame implements DocumentListener,KeyListener {
 	public static void main(String[] args) {
 		new Texed();
 	}
-
-	
-
 }
