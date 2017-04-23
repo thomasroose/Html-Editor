@@ -81,7 +81,7 @@ public class Texed extends JFrame implements DocumentListener,KeyListener {
 		}
 		
 		/**
-		 * Register every letter and number and backspace
+		 * Register every letter, number and backspace
 		 */
 		if(e.getKeyCode() == KeyEvent.VK_BACK_SPACE){
 			bufferCurrent.setLength(bufferCurrent.length()-1);
@@ -139,9 +139,9 @@ public class Texed extends JFrame implements DocumentListener,KeyListener {
 	}
 	
 	/**
-	 * 
-	 * @param text	Text you get from the textArea
-	 * @return tag All the text from the textarea with the correct opening- and closing tags at the correct position
+	 * Method that adds closing tags to the text where they are needed 
+	 * @param text	Text which needs to be checked
+	 * @return tag 	All the text from the textArea with the correct opening- and closing tags at the correct position
 	 */
 	public String fixTags(String text){
 		/**
@@ -256,7 +256,6 @@ public class Texed extends JFrame implements DocumentListener,KeyListener {
 				 * Case if there is text after the current tag
 				 */
 				if(leftTrim.length() > 0 && leftTrim.indexOf("<") >= 0){
-					
 					switch (first2Chars){
 						case "<x": {
 							addedText = currentTag + "</" + contentCurrentTag + ">" + leftTrim;	
@@ -268,7 +267,6 @@ public class Texed extends JFrame implements DocumentListener,KeyListener {
 							break;
 						}
 						case "xx": {
-							System.out.println("xx");
 							posNextOpenTag = leftTrim.indexOf("<");
 							if( posNextOpenTag > 0) { 
 								addedText = currentTag + leftTrim.substring(0,posNextOpenTag) + "</" + contentCurrentTag + ">" + leftTrim.substring(posNextOpenTag,leftTrim.length());
@@ -304,12 +302,12 @@ public class Texed extends JFrame implements DocumentListener,KeyListener {
 				stringChecked = "";
 					
 			/**
-			 * Current tag is ok and prepare string "notChecked" for next check of tags
+			 * Current tag is OK and prepare string "notChecked" for next check of tags
 			 */
 			}else{
 				
 				/**
-				 * Check if end of html
+				 * Check if end of Html
 				 */
 				if(leftTrim.length() > 0 && leftTrim.indexOf("<") >= 0){
 					switch (first2Chars){
@@ -338,7 +336,7 @@ public class Texed extends JFrame implements DocumentListener,KeyListener {
 						endLoop = true;
 						
 					/**
-					 * Handels case if "a<h2> at the end
+					 * Handels case if "a<tag>" at the end
 					 */
 					}else { 
 					 	if (!stringNotChecked.substring(0,1).equals("<")) {
@@ -356,18 +354,17 @@ public class Texed extends JFrame implements DocumentListener,KeyListener {
 	}
 	
 	/**
-	 * Method that checks for an Html tag
-	 * 
-	 * @param content		The content where the tags ar in
-	 * @param HtmlTagArray	An array of some of the Html elements
-	 * @return
+	 * Method thats checks if the tag is an Html tag
+	 * @param content		Tag which needs to be checked
+	 * @param htmlTagArray	An array of some of the Html elements
+	 * @return foundElement	True if tag is Html else false
 	 */
-	public boolean IsHtmlTag (String content, String[] HtmlTagArray) {
-		int lengthArray = HtmlTagArray.length,i;
+	public boolean IsHtmlTag (String content, String[] htmlTagArray) {
+		int lengthArray = htmlTagArray.length,i;
 		boolean foundElement = false;
 		i = 0;
 		while (i < (lengthArray -1) && !foundElement) {
-			if (content.equals(HtmlTagArray[i])) {
+			if (content.equals(htmlTagArray[i])) {
 				foundElement = true;
 			}
 			i++;
